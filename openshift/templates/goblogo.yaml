@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: goblogo-template
+  annotations:
+    description: "blog written in golang"
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+      annotations:
+        description: "The built application image"
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: goblogo
+      annotations:
+        description: Defines how to build the application
+    spec:
+      source:
+        git:
+          uri: "https://github.com/austin880625/test_go"
+          ref: "master"
+      strategy:
+        sourceStrategy:
+          from:
+            kind: "DockerImage"
+            name: "golang:latest"
+      output:
+        to:
+          kind: "ImageStreamTag"
+          name: "${NAME}:latest"
+
+parameters:
+  - name: NAME
+    description: "The name assigned to all of the frontend objects defined in this template."
+    value: "goblogo"
+  - name: NAMESPACE
+    description: ""
+    value: "goblogo"
+labels:
+  template: "goblogo-template"
+  app: "${NAME}"

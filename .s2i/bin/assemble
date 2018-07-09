@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Building the applicatioin...."
+go bulid -o main
+echo "Build done."
