@@ -2,7 +2,7 @@
 echo "Installing application sources"
 # About /tmp/ :
 # https://docs.openshift.com/online/creating_images/s2i.html#build-process
-mv /tmp/* /home/go/
+mv -v -f /tmp/* /home/go/
 cd /home/go
 echo "Building the applicatioin...."
 go build -o main
