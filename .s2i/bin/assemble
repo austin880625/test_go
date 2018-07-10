@@ -5,6 +5,7 @@ echo "Installing application sources"
 mv -v -f /tmp/src/* /home/go/
 cd /home/go
 GOPATH=/home/go
+GOCACHE="/home/go/.cache/go-build"
 echo "Building the applicatioin...."
 go build -o main
 echo "Build done."
