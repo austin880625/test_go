@@ -5,12 +5,24 @@ metadata:
   annotations:
     description: "blog written in golang"
 objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    stringData:
+      webhook-secret: "${GITHUB_WEBHOOK_SECRET}"
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-base
+      annotations:
+        description: "The base image."
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: ${NAME}
       annotations:
-        description: "The built application image"
+        description: "The built application image."
   - kind: BuildConfig
     apiVersion: v1
     metadata:
@@ -18,6 +30,12 @@ objects:
       annotations:
         description: Defines how to build the application
     spec:
+      triggers:
+        - type: "ImageChange"
+        - type: "ConfigChange"
+        - type: "GitHub"
+          github:
+            secret: webhook-secret
       source:
         git:
           uri: "https://github.com/austin880625/test_go"
@@ -25,12 +43,16 @@ objects:
       strategy:
         sourceStrategy:
           from:
-            kind: "DockerImage"
-            name: "golang:latest"
+            kind: "ImageStreamTag"
+            name: "${NAME}-base:latest"
       output:
         to:
           kind: "ImageStreamTag"
           name: "${NAME}:latest"
+
+labels:
+  template: "goblogo-template"
+  app: "goblogo"
 
 parameters:
   - name: NAME
@@ -39,6 +61,5 @@ parameters:
   - name: NAMESPACE
     description: ""
     value: "goblogo"
-labels:
-  template: "goblogo-template"
-  app: "${NAME}"
+  - name: GITHUB_WEBHOOK_SECRET
+    description: "The secret contained in the webhook url."

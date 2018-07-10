@@ -1,0 +1,5 @@
+FROM golang:latest
+
+EXPOSE 8080
+
+USER 1001
