@@ -49,6 +49,43 @@ objects:
         to:
           kind: "ImageStreamTag"
           name: "${NAME}:latest"
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      annotations:
+        description: "Defines how to deploy the application server"
+    spec:
+      strategy:
+        type: Recreate
+      triggers:
+        - type: "ImageChange"
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - "goblogo"
+            from:
+              kind: "ImageStreamTag"
+              name: "${NAME}:latest"
+        - type: "ConfigChange"
+      replicas: "1"
+      selector:
+        name: "${NAME}"
+      template:
+        metadata:
+          name: "${NAME}"
+          labels:
+            name: "${NAME}"
+        spec:
+          containers:
+            - name: "goblogo"
+              ports:
+                - containerPort: 8080
+                  protocol: "TCP"
+              image: "goblogo:latest"
+              resources:
+                limits:
+                  memory: "${MEMORY_LIMIT}"
 
 labels:
   template: "goblogo-template"
@@ -63,3 +100,6 @@ parameters:
     value: "goblogo"
   - name: GITHUB_WEBHOOK_SECRET
     description: "The secret contained in the webhook url."
+  - name: MEMORY_LIMIT
+    description: "The memory limit of the service"
+    value: "512Mi"
