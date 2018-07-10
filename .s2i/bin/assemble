@@ -4,6 +4,7 @@ echo "Installing application sources"
 # https://docs.openshift.com/online/creating_images/s2i.html#build-process
 mv -v -f /tmp/src/* /home/go/
 cd /home/go
+GOPATH=/home/go
 echo "Building the applicatioin...."
 go build -o main
 echo "Build done."
